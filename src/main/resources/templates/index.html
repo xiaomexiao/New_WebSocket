@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/jquery/2.0.0/jquery.min.js"></script>
+    <script src="../js/bootstrap/3.3.6/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div style="width:400px;margin:20px auto;border:1px solid lightgray;padding:20px;text-align:center;">
+    当前比特币价格：￥<span style="color:#FF7519" id="price">10000</span>
+    <div style="font-size:0.9em;margin-top:20px">查看的人数越多，价格越高, 当前总共 <span id="total">1</span> 个人在线</div>
+    <div style="color:silver;font-size:0.8em;margin-top:20px">以上价格纯属虚构，如有雷同，so what？</div>
+
+</div>
+<iframe id="my_iframe" style="display:none;"></iframe>
+<script type="application/javascript">
+    var socket;
+    if (typeof(WebSocket) == "undefined") {
+        console.log("您的浏览器不支持WebSocket");
+    } else {
+        console.log("您的浏览器支持WebSocket");
+        socket = new WebSocket("ws://localhost:8080/websocket/33");
+        //打开事件
+        socket.onopen = function () {
+            console.log("Socket 已打开");
+
+        //socket.send("这是来自客户端的消息" + location.href + new Date());
+        };
+
+
+        //获得消息事件
+        socket.onmessage = function (msg) {
+            document.getElementById('price').innerHTML = JSON.parse(msg.data).price;
+            document.getElementById('total').innerHTML = JSON.parse(msg.data).total;
+            //关闭事件
+            socket.onclose = function () {
+                console.log("Socket已关闭");
+                $("#close").val("Socket已关闭")
+            };
+
+            socket.onerror = function () {
+                alert("Socket发生了错误");
+
+            }
+        }
+    }
+
+</script>
+
+</body>
+
+</html>
